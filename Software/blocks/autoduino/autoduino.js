@@ -338,12 +338,45 @@ Blockly.Blocks['autoduino_rgb_led'] = {
         .appendField(Blockly.Msg.AUTODUINO_INOUT_RGBLED_NB_OF_PIXEL)
         .appendField(new Blockly.FieldTextInput("2"), "Number_of_Pixels")
         .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_LED_INPUT2)
+        .appendField(new Blockly.FieldDropdown(Blockly.Msg.AUTODUINO_OUT_IN_LED_RGB),"PIN");
     this.setPreviousStatement(true, "null");
     this.setNextStatement(true, "null");
     this.setTooltip('');
   }
 };
 
+
+Blockly.Blocks['autoduino_rgb_led2'] = {
+  init: function() {
+    this.setHelpUrl(Blockly.Msg.AUTODUINO_INOUT_RGBLED_HELPURL);
+    this.setColour("#8B0000");
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_RGBLED_TEXT);
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_CENTRE)
+        .appendField(new Blockly.FieldImage(Blockly.pathToBlockly + 'blocks/autoduino/media/ws2812.jpg', Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldColour("#ff0000"), "C")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput("Pixel_number" , 'Number')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_RGBLED_PIXEL);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_RGBLED_NB_OF_PIXEL)
+        .appendField(new Blockly.FieldTextInput("2"), "Number_of_Pixels")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_LED_INPUT2)
+        .appendField(new Blockly.FieldDropdown(Blockly.Msg.AUTODUINO_OUT_IN_LED_RGB),"PIN");
+    this.setPreviousStatement(true, "null");
+    this.setNextStatement(true, "null");
+    this.setTooltip('');
+  }
+};
 
 Blockly.Blocks['autoduino_piezo_buzzer'] = {
   init: function() {
@@ -446,68 +479,126 @@ Blockly.Blocks['autoduino_motor_builtin'] = { // UPDATE PHOTO
 /** ****************** LCD ******************************/
 
 
-Blockly.Blocks['autoduino_serial_lcd_print'] = {
+//lcdinit OK
+Blockly.Blocks['autoduino_lcdinit'] = {
   init: function() {
     this.setColour("#8B0000");
-	this.setHelpUrl(Blockly.Msg.AUTODUINO_INOUT_LCD_PRINT_HELPURL);
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_PRINT_TEXT)
-        .appendField(new Blockly.FieldImage(Blockly.pathToBlockly + 'blocks/autoduino/media/LCD.JPG', Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
-    this.appendValueInput("TEXT", 'String')
-        .setCheck('String')
+	this.setHelpUrl('');
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT74)
+        .appendField(new Blockly.FieldImage("blocks/autoduino/media/I2C_LCD.jpg", Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
+    this.appendDummyInput("")
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_PRINT_INPUT2);
-    this.appendValueInput("TEXT2", 'String')
-        .setCheck('String')
+		.appendField(Blockly.Msg.AUTODUINO_TEXT75)
+        .appendField(new Blockly.FieldDropdown([["63", "63"], ["39", "39"]]),"I2C_adress");
+    this.appendDummyInput("")
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_PRINT_INPUT3);
-    this.appendValueInput("DELAY_TIME", 'Number')
-        .setCheck('Number')
+        .appendField(Blockly.Msg.AUTODUINO_TEXT76)
+        .appendField(new Blockly.FieldTextInput('20',Blockly.Blocks.math_number.validator), 'nbcol');
+    this.appendDummyInput("")
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_PRINT_INPUT4);
+        .appendField(Blockly.Msg.AUTODUINO_TEXT77)
+        .appendField(new Blockly.FieldTextInput('4',Blockly.Blocks.math_number.validator), 'nblig');   
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT78)     
+        .appendField(new Blockly.FieldCheckbox('TRUE'), 'backlight');   
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT79)     
+        .appendField(new Blockly.FieldCheckbox('FALSE'), 'cursor'); 
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT80)     
+        .appendField(new Blockly.FieldCheckbox('FALSE'), 'blink');          
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip(Blockly.Msg.AUTODUINO_INOUT_LCD_PRINT_TOOLTIP);
+    this.setTooltip(Blockly.Msg.AUTODUINO_TEXT81);
   }
 };
 
-//autoduino lcd power on/off
-Blockly.Blocks['autoduino_serial_lcd_power'] = {
+//lcdspecial OK
+Blockly.Blocks['autoduino_lcdspecial'] = {
   init: function() {
     this.setColour("#8B0000");
-	this.setHelpUrl(Blockly.Msg.AUTODUINO_INOUT_LCD_POWER_HELPURL);
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_POWER_TEXT)
-        .appendField(new Blockly.FieldImage(Blockly.pathToBlockly + 'blocks/autoduino/media/I2C_LCD.jpg', Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
-    this.appendDummyInput()
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_POWER_STATE)
-        .appendField(new Blockly.FieldDropdown(Blockly.Msg.FIELDDROPDOWN_ONOFF), "STAT");
+    this.setHelpUrl('');
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT82);
+    this.appendDummyInput("")
+        .appendField(new Blockly.FieldImage("blocks/autoduino/media/I2C_LCD.jpg", Blockly.Arduino.imageSize, Blockly.Arduino.imageSize))
+        .appendField(new Blockly.FieldDropdown([[Blockly.Msg.AUTODUINO_TEXT83, "backlight"], [Blockly.Msg.AUTODUINO_TEXT84, "noBacklight"],[Blockly.Msg.AUTODUINO_TEXT85, "cursor"],[Blockly.Msg.AUTODUINO_TEXT86, "noCursor"],[Blockly.Msg.AUTODUINO_TEXT87, "blink"],[Blockly.Msg.AUTODUINO_TEXT88, "noBlink"],[Blockly.Msg.AUTODUINO_TEXT89, "display"],[Blockly.Msg.AUTODUINO_TEXT90, "noDisplay"]]),"special");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip(Blockly.Msg.AUTODUINO_INOUT_LCD_POWER_TOOLTIP);
+    this.setTooltip(Blockly.Msg.AUTODUINO_TEXT91);
   }
 };
 
-//scroll left/right/no scroll/blink/noblink
-Blockly.Blocks['autoduino_serial_lcd_effect'] = {
+//lcdclear OK
+Blockly.Blocks['autoduino_lcdclear'] = {
   init: function() {
     this.setColour("#8B0000");
-	this.setHelpUrl(Blockly.Msg.AUTODUINO_INOUT_LCD_EFFECT_HELPURL);
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_EFFECT_TEXT)
-        .appendField(new Blockly.FieldImage(Blockly.pathToBlockly + 'blocks/autoduino/media/I2C_LCD.jpg', Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
-    this.appendDummyInput()
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Msg.AUTODUINO_INOUT_LCD_EFFECT_EFFECT)
-        .appendField(new Blockly.FieldDropdown(Blockly.Msg.AUTODUINO_INOUT_LCD_EFFECT_EFFECT_EFFECT), "STAT");
-    this.setPreviousStatement(true, null);INPUTS
+    this.setHelpUrl('');
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT92)
+        .appendField(new Blockly.FieldImage("blocks/autoduino/media/I2C_LCD.jpg", Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));   
+    this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip(Blockly.Msg.AUTODUINO_INOUT_LCD_EFFECT_TOOLTIP);
+    this.setTooltip(Blockly.Msg.AUTODUINO_TEXT93);
+  }
+};
+
+//lcdwrite OK
+Blockly.Blocks['autoduino_lcdwrite'] = {
+  init: function() {
+    this.setColour("#8B0000");
+    this.setHelpUrl('');
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT94)
+        .appendField(new Blockly.FieldImage("blocks/autoduino/media/I2C_LCD.jpg", Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
+    this.appendValueInput('TEXT', 'String')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT98);
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT95);
+    this.appendValueInput('COL', 'Number')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT96);
+    this.appendValueInput('LIG', 'Number')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT97);   
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip(Blockly.Msg.AUTODUINO_TEXT99);
   }
 };
 
 
+//lcdwrite OK
+Blockly.Blocks['autoduino_lcdprint'] = {
+  init: function() {
+    this.setColour("#8B0000");
+    this.setHelpUrl('');
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT94)
+        .appendField(new Blockly.FieldImage("blocks/autoduino/media/I2C_LCD.jpg", Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
+    this.appendValueInput("TEXT")
+        .setCheck("String")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT98);
+    this.setInputsInline(false);
+    this.appendDummyInput("")
+        .appendField(Blockly.Msg.AUTODUINO_TEXT95);
+    this.appendValueInput('COL', 'Number')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT96);
+    this.appendValueInput('LIG', 'Number')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_TEXT97);   
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip(Blockly.Msg.AUTODUINO_TEXT99);
+  }
+};
 /** ****************** COMMUNICATION ******************************/
 
 
