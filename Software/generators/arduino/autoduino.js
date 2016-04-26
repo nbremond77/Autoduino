@@ -253,6 +253,33 @@ void pca9555::writeWord(byte addr, uint16_t data){\n\
   }\n\
 }";
 
+
+
+var _get_next_pin = function(dropdown_pin) { // TO BE UPDATED
+  var pos = -1;
+    //check if NextPIN in bound
+  if(parseInt(dropdown_pin)){
+    var NextPIN = parseInt(dropdown_pin)+1;
+    pos = profile.defaultBoard.digital.indexOf(String(NextPIN));
+  } else {
+    var NextPIN = 'A'+(parseInt(dropdown_pin.slice(1,dropdown_pin.length))+1);
+    pos = profile.defaultBoard.analog.indexOf(String(NextPIN));
+  }
+  if(pos < 0){
+//    alert("Autoduino Sensor needs PIN#+1 port, current setting is out of bound.");
+    return null;
+  } else {
+    return NextPIN;
+  }
+};
+
+
+function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16);};
+function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16);};
+function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16);};
+function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h;};
+
+
 goog.provide('Blockly.Arduino.autoduino');
 
 goog.require('Blockly.Arduino');
@@ -548,14 +575,33 @@ Blockly.Arduino.autoduino_rgb_led = function() {
     var dropdown_stat_C3 = Blockly.Arduino.valueToCode(this, 'C3', Blockly.Arduino.ORDER_ATOMIC);
     var pixel_number = Blockly.Arduino.valueToCode(this, 'Pixel_number', Blockly.Arduino.ORDER_ATOMIC);
     var numpixels = this.getFieldValue('Number_of_Pixels');
-    var pin_ledrgb = "9"
+    var pin_ledrgb = this.getFieldValue('PIN');
     
-    Blockly.Arduino.definitions_['define_autoduino_WS2812B'] = '#include <Adafruit_NeoPixel.h>\n Adafruit_NeoPixel pixels = Adafruit_NeoPixel('+numpixels+', '+pin_ledrgb+', NEO_GRB + NEO_KHZ800);\n'; 
-    Blockly.Arduino.setups_['setup_autoduino_WS2812B_1'] = 'pinMode('+pin_ledrgb+', OUTPUT);\n'
-    Blockly.Arduino.setups_['setup_autoduino_WS2812B_2'] = 'pixels.begin();\n';
+    Blockly.Arduino.definitions_['define_autoduino_WS2812B'] = '#include <Adafruit_NeoPixel.h>\n'; 
+    Blockly.Arduino.definitions_['define_autoduino_WS2812B_'+pin_ledrgb] = 'Adafruit_NeoPixel pixels_'+pin_ledrgb+' = Adafruit_NeoPixel('+numpixels+', '+pin_ledrgb+', NEO_GRB + NEO_KHZ800);\n'; 
+    Blockly.Arduino.setups_['setup_autoduino_WS2812B_0_'+pin_ledrgb] = 'pinMode('+pin_ledrgb+', OUTPUT);';
+    Blockly.Arduino.setups_['setup_autoduino_WS2812B_1_'+pin_ledrgb] = 'pixels_'+pin_ledrgb+'.begin();\n';
   
-    var code = 'pixels.setPixelColor('+(pixel_number-1)+', pixels.Color('+dropdown_stat_C1+','+dropdown_stat_C2+','+dropdown_stat_C3+'));\n'
-    code    += 'pixels.show();\n'
+    var code = 'pixels_'+pin_ledrgb+'.setPixelColor('+(pixel_number-1)+', pixels_'+pin_ledrgb+'.Color('+dropdown_stat_C1+','+dropdown_stat_C2+','+dropdown_stat_C3+'));\n';
+    code    += 'pixels_'+pin_ledrgb+'.show();\n';
+    return code;
+};
+
+
+
+Blockly.Arduino.autoduino_rgb_led2 = function() {
+    var colour_name = this.getFieldValue('C');
+    var pixel_number = Blockly.Arduino.valueToCode(this, 'Pixel_number', Blockly.Arduino.ORDER_ATOMIC);
+    var numpixels = this.getFieldValue('Number_of_Pixels');
+    var pin_ledrgb = this.getFieldValue('PIN');
+    
+    Blockly.Arduino.definitions_['define_autoduino_WS2812B'] = '#include <Adafruit_NeoPixel.h>\n'; 
+    Blockly.Arduino.definitions_['define_autoduino_WS2812B_'+pin_ledrgb] = 'Adafruit_NeoPixel pixels_'+pin_ledrgb+' = Adafruit_NeoPixel('+numpixels+', '+pin_ledrgb+', NEO_GRB + NEO_KHZ800);\n'; 
+    Blockly.Arduino.setups_['setup_autoduino_WS2812B_0_'+pin_ledrgb] = 'pinMode('+pin_ledrgb+', OUTPUT);';
+    Blockly.Arduino.setups_['setup_autoduino_WS2812B_1_'+pin_ledrgb] = 'pixels_'+pin_ledrgb+'.begin();\n';
+  
+    var code = 'pixels_'+pin_ledrgb+'.setPixelColor('+(pixel_number-1)+', pixels_'+pin_ledrgb+'.Color('+hexToR(colour_name) +','+hexToG(colour_name) +','+hexToB(colour_name) +'));\n';
+    code    += 'pixels_'+pin_ledrgb+'.show();\n';
     return code;
 };
 
@@ -692,112 +738,86 @@ Blockly.Arduino.autoduino_motor_builtin = function() {
 
 /** ****************** LCD ******************************/
 
-/*
-#include <SerialLCD.h>
-#include <SoftwareSerial.h> //this is a must
-SerialLCD slcd(11,12);//this is a must, assign soft serial pins
-
-void setup()
-{
-  slcd.begin();// set up :
-}
-
-void loop()
-{
-  slcd.backlight();// Turn on the backlight: //noBacklight
-  slcd.setCursor(0,0); // set the cursor to (0,0):
-  slcd.print("  Seeed Studio"); // Print a message to the LCD.
-  slcd.setCursor(0,1); //line 2
-  slcd.print("   Starter kit   ");
-  delay(5000);
-  //slcd.scrollDisplayLeft();//scrollDisplayRight/autoscroll/
-  //slcd.clear();
-  //Power/noPower
-}
-*/
-
-var _get_next_pin = function(dropdown_pin) { // TO BE UPDATED
-  var pos = -1;
-    //check if NextPIN in bound
-  if(parseInt(dropdown_pin)){
-    var NextPIN = parseInt(dropdown_pin)+1;
-    pos = profile.defaultBoard.digital.indexOf(String(NextPIN));
-  } else {
-    var NextPIN = 'A'+(parseInt(dropdown_pin.slice(1,dropdown_pin.length))+1);
-    pos = profile.defaultBoard.analog.indexOf(String(NextPIN));
+Blockly.Arduino.autoduino_lcdinit = function() {
+  var dropdown_I2C_adress = this.getTitleValue('I2C_adress');
+  var dropdown_nbcol = this.getTitleValue('nbcol');
+  var dropdown_nblig = this.getTitleValue('nblig');
+  var dropdown_cursor = this.getTitleValue('cursor');
+  var dropdown_blink = this.getTitleValue('blink');
+  var dropdown_backlight = this.getTitleValue('backlight');
+  Blockly.Arduino.definitions_['define_autoduino_Wire'] = '#include <Wire.h>\n';
+  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal_I2C'] = '#include <LiquidCrystal_I2C.h>\n';
+  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'LiquidCrystal_I2C lcd('+dropdown_I2C_adress+','+dropdown_nbcol+','+dropdown_nblig+');\n';
+  var mysetup='lcd.init();\n';
+  if (dropdown_backlight=="TRUE")
+  {
+    mysetup+='lcd.backlight();\n';
+  } else
+  {
+    mysetup+='lcd.noBacklight();\n';
   }
-  if(pos < 0){
-//    alert("Autoduino Sensor needs PIN#+1 port, current setting is out of bound.");
-    return null;
-  } else {
-    return NextPIN;
+  if (dropdown_cursor=="TRUE")
+  {
+    mysetup+='lcd.cursor();\n';
+  } else
+  {
+    mysetup+='lcd.noCursor();\n';
   }
-};
-
-Blockly.Arduino.autoduino_serial_lcd_print = function() { // TO BE UPDATED
-  var dropdown_pin = this.getFieldValue('PIN');
-  var text = Blockly.Arduino.valueToCode(this, 'TEXT',
-      Blockly.Arduino.ORDER_UNARY_POSTFIX) || '\'\'';
-  var text2 = Blockly.Arduino.valueToCode(this, 'TEXT2',
-      Blockly.Arduino.ORDER_UNARY_POSTFIX) || '\'\'';
-  var delay_time = Blockly.Arduino.valueToCode(this, 'DELAY_TIME', Blockly.Arduino.ORDER_ATOMIC) || '1000';
-  /*if(text.length>16||text2.length>16){
-      alert("string is too long");
-  }*/
-  Blockly.Arduino.definitions_['define_autoduino_seriallcd'] = '#include <SerialLCD.h>\n';
-  Blockly.Arduino.definitions_['define_autoduino_softwareserial'] = '#include <SoftwareSerial.h>\n';
-  //generate PIN#+1 port
-  var NextPIN = _get_next_pin(dropdown_pin);
-
-  Blockly.Arduino.definitions_['var_lcd_'+dropdown_pin] = 'SerialLCD slcd_'+dropdown_pin+'('+dropdown_pin+','+NextPIN+');\n';
-
-  Blockly.Arduino.setups_['setup_autoduino_lcd_'+dropdown_pin] = 'slcd_'+dropdown_pin+'.begin();\n';
-  var code = 'slcd_'+dropdown_pin+'.backlight();\n';
-  code    += 'slcd_'+dropdown_pin+'.setCursor(0,0);\n';
-  code    += 'slcd_'+dropdown_pin+'.print('+text+');\n';//text.replace(new RegExp('\'',"gm"),'')
-  code    += 'slcd_'+dropdown_pin+'.setCursor(0,1);\n';
-  code    += 'slcd_'+dropdown_pin+'.print('+text2+');\n';
-  code    += 'delay('+delay_time+');\n';
+  if (dropdown_blink=="TRUE")
+  {
+    mysetup+='lcd.blink();\n';
+  } else
+  {
+    mysetup+='lcd.noBlink();\n';
+  }
+  Blockly.Arduino.setups_['setup_autoduino_lcd'] = mysetup;
+  var code="";
   return code;
 };
 
-Blockly.Arduino.autoduino_serial_lcd_power = function() { // TO BE UPDATED
-  var dropdown_pin = this.getFieldValue('PIN');
-  var dropdown_stat = this.getFieldValue('STAT');
-
-  Blockly.Arduino.definitions_['define_autoduino_seriallcd'] = '#include <SerialLCD.h>\n';
-  Blockly.Arduino.definitions_['define_autoduino_softwareserial'] = '#include <SoftwareSerial.h>\n';
-  //generate PIN#+1 port
-  var NextPIN = _get_next_pin(dropdown_pin);
-
-  Blockly.Arduino.definitions_['var_lcd'+dropdown_pin] = 'SerialLCD slcd_'+dropdown_pin+'('+dropdown_pin+','+NextPIN+');\n';
-  var code = 'slcd_'+dropdown_pin;
-  if(dropdown_stat==="ON"){
-    code += '.Power();\n';
-  } else {
-    code += '.noPower();\n';
-  }
+Blockly.Arduino.autoduino_lcdwrite = function() {
+  var text = Blockly.Arduino.valueToCode(this, 'TEXT', Blockly.Arduino.ORDER_UNARY_POSTFIX) || '\'\'';
+  var dropdown_col = this.getFieldValue('COL');
+  var dropdown_lig = this.getFieldValue('LIG');  
+  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <ShiftRegLCD123.h>\n'; 
+  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'ShiftRegLCD123 lcd(12,13,SRLCD123);\n';
+  //dans le setup    
+  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";
+  var code = 'lcd.setCursor('+dropdown_col+','+dropdown_lig+');\n'+
+  'lcd.print('+text+');\n';
   return code;
 };
 
-Blockly.Arduino.autoduino_serial_lcd_effect = function() { // TO BE UPDATED
-  var dropdown_pin = this.getFieldValue('PIN');
-  var dropdown_stat = this.getFieldValue('STAT');
 
-  Blockly.Arduino.definitions_['define_autoduino_seriallcd'] = '#include <SerialLCD.h>\n';
-  Blockly.Arduino.definitions_['define_autoduino_softwareserial'] = '#include <SoftwareSerial.h>\n';
-  //generate PIN#+1 port
-  var NextPIN = _get_next_pin(dropdown_pin);
+Blockly.Arduino.autoduino_lcdprint = function() {
+  var text = Blockly.Arduino.valueToCode(this, 'TEXT', Blockly.Arduino.ORDER_ATOMIC);
+  var dropdown_col = this.getFieldValue('COL');
+  var dropdown_lig = this.getFieldValue('LIG');  
+  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <ShiftRegLCD123.h>\n'; 
+  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'ShiftRegLCD123 lcd(12,13,SRLCD123);\n';
+  //dans le setup    
+  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";
+  var code = 'lcd.setCursor('+dropdown_col+','+dropdown_lig+');\n'+
+  'lcd.print('+text+');\n';
+  return code;
+};
 
-  Blockly.Arduino.definitions_['var_lcd'+dropdown_pin] = 'SerialLCD slcd_'+dropdown_pin+'('+dropdown_pin+','+NextPIN+');\n';
-  var code = 'slcd_'+dropdown_pin;
-  if(dropdown_stat==="LEFT"){
-    code += '.scrollDisplayLeft();\n';
-  } else if(dropdown_stat==="RIGHT"){
-    code += '.scrollDisplayRight();\n';
-  } else {
-    code += '.autoscroll();\n';
-  }
+Blockly.Arduino.autoduino_lcdspecial = function() {
+  var dropdown_special = this.getTitleValue('special');
+  var code="lcd."+dropdown_special+"();\n";
+  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <ShiftRegLCD123.h>\n'; 
+  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'ShiftRegLCD123 lcd(12,13,SRLCD123);\n';
+  //dans le setup    
+  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";    
+  return code;
+};
+
+Blockly.Arduino.autoduino_lcdclear = function() {
+  var code = 'lcd.clear();\n';
+  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <LiquidCrystal.h>\n'; 
+  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'LiquidCrystal lcd(12,11,5,13,3,2);\n';  
+  //dans le setup    
+  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";    
   return code;
 };
 
