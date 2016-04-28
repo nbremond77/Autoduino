@@ -1220,6 +1220,7 @@ Blockly.Msg.CAT_AUTODUINO_IN = "capteurs";
 Blockly.Msg.CAT_AUTODUINO_OUT = "actionneurs";
 Blockly.Msg.CAT_AUTODUINO_LCD = "écran LCD";
 Blockly.Msg.CAT_AUTODUINO_COMM = "communication";
+Blockly.Msg.CAT_AUTODUINO_UTIL = "utile";
 
 Blockly.Msg.AUTODUINO_OUT = [["Out1", "7"], ["Out2", "8"], ["Out3", "40"], ["Out4", "41"], ["Out5", "42"], ["Out6", "43"], ["Out7", "44"], ["Out8", "45"]];
 Blockly.Msg.AUTODUINO_IN = [["In1", "A0"], ["In2", "A1"], ["In3", "A2"], ["In4", "A3"], ["In5", "3"], ["In6", "4"], ["In7", "33"], ["In8", "34"]];
@@ -1389,3 +1390,6 @@ Blockly.Msg.AUTODUINO_TEXT96 = "colonne [0..MAXCOL-1]";
 Blockly.Msg.AUTODUINO_TEXT97 = "ligne [0..MAXLIG-1]";
 Blockly.Msg.AUTODUINO_TEXT98 = "le texte";
 Blockly.Msg.AUTODUINO_TEXT99 = "Ecrire sur l'écran LCD (réf : LCD1)";
+Blockly.Msg.AUTODUINO_EDGE_TEXT = "détection ";
+Blockly.Msg.AUTODUINO_EDGE_INPUT = "sur l'entrée";
+Blockly.Msg.AUTODUINO_EDGE_UP_DOWN = [["front montant", "UP"], ["front descedant", "DOWN"]];
