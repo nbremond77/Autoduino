@@ -312,6 +312,26 @@ Blockly.Blocks['autoduino_IR_led'] = {
 };
 
 
+Blockly.Blocks['autoduino_output'] = {
+  init: function() {
+    this.setColour("#8B0000");
+	this.setHelpUrl(Blockly.Msg.AUTODUINO_INOUT_LED_HELPURL);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_LED_INPUT1)
+        .appendField(new Blockly.FieldImage(Blockly.pathToBlockly + 'blocks/autoduino/media/700x560_k-ap-mdel-m.jpg', Blockly.Arduino.imageSize, Blockly.Arduino.imageSize));
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_LED_INPUT2)
+        .appendField(new Blockly.FieldDropdown(Blockly.Msg.AUTODUINO_OUT_IN),"PIN");
+    this.setInputsInline(true);
+    this.appendValueInput("STAT", 'Boolean')
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_INOUT_LED_INPUT3);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip(Blockly.Msg.AUTODUINO_INOUT_LED_TOOLTIP);
+  }
+};
 
 Blockly.Blocks['autoduino_rgb_led'] = {
   init: function() {
@@ -643,5 +663,24 @@ Blockly.Blocks['autoduino_rc'] = {
     this.setPreviousStatement(true, null);INPUTS
     this.setNextStatement(true, null);
     this.setTooltip(Blockly.Msg.AUTODUINO_INOUT_LCD_EFFECT_TOOLTIP);
+  }
+};
+
+/** ****************** UTILE ******************************/
+
+
+Blockly.Blocks['autoduino_edge_detection'] = {
+  init: function() {
+    this.setColour("#8B0000");
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.AUTODUINO_EDGE_TEXT);
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(new Blockly.FieldDropdown(Blockly.Msg.AUTODUINO_EDGE_UP_DOWN), "STAT");
+    this.appendDummyInput("")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(Blockly.Msg.AUTODUINO_EDGE_INPUT)
+        .appendField(new Blockly.FieldDropdown(Blockly.Msg.AUTODUINO_IN_OUT),"PIN");
+    this.setOutput(true, 'Boolean');        
   }
 };
