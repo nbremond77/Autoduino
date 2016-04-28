@@ -19,7 +19,10 @@
  * @author gasolin@gmail.com (Fred Lin)
  */
 
-myLibrary = "#include <Wire.h>\n\
+//---------------------------------------------------
+
+
+myLibrary_gpio_expander = "#include <Wire.h>\n\
 #include <stdio.h>\n\
 #include <inttypes.h>\n\
 #include <Arduino.h>\n\
@@ -254,6 +257,427 @@ void pca9555::writeWord(byte addr, uint16_t data){\n\
 }";
 
 
+//---------------------------------------------------
+
+
+
+
+
+myLibrary_lcd = "#include <inttypes.h>\n\
+#include <Print.h>\n\
+// commands\n\
+#define LCD_CLEARDISPLAY 0x01\n\
+#define LCD_RETURNHOME 0x02\n\
+#define LCD_ENTRYMODESET 0x04\n\
+#define LCD_DISPLAYCONTROL 0x08\n\
+#define LCD_CURSORSHIFT 0x10\n\
+#define LCD_FUNCTIONSET 0x20\n\
+#define LCD_SETCGRAMADDR 0x40\n\
+#define LCD_SETDDRAMADDR 0x80\n\
+\n\
+// flags for display entry mode\n\
+#define LCD_ENTRYRIGHT 0x00\n\
+#define LCD_ENTRYLEFT 0x02\n\
+#define LCD_ENTRYSHIFTINCREMENT 0x01\n\
+#define LCD_ENTRYSHIFTDECREMENT 0x00\n\
+\n\
+// flags for display on/off control\n\
+#define LCD_DISPLAYON 0x04\n\
+#define LCD_DISPLAYOFF 0x00\n\
+#define LCD_CURSORON 0x02\n\
+#define LCD_CURSOROFF 0x00\n\
+#define LCD_BLINKON 0x01\n\
+#define LCD_BLINKOFF 0x00\n\
+\n\
+// flags for display/cursor shift\n\
+#define LCD_DISPLAYMOVE 0x08\n\
+#define LCD_CURSORMOVE 0x00\n\
+#define LCD_MOVERIGHT 0x04\n\
+#define LCD_MOVELEFT 0x00\n\
+\n\
+// flags for function set\n\
+#define LCD_8BITMODE 0x10\n\
+#define LCD_4BITMODE 0x00\n\
+#define LCD_2LINE 0x08\n\
+#define LCD_1LINE 0x00\n\
+#define LCD_5x10DOTS 0x04\n\
+#define LCD_5x8DOTS 0x00\n\
+\n\
+// flags for backlight control\n\
+#define LCD_BACKLIGHT 0x08\n\
+#define LCD_NOBACKLIGHT 0x00\n\
+\n\
+#define En B00000100  // Enable bit\n\
+#define Rw B00000010  // Read/Write bit\n\
+#define Rs B00000001  // Register select bit\n\
+\n\
+/**\n\
+ * This is the driver for the Liquid Crystal LCD displays that use the I2C bus.\n\
+ *\n\
+ * After creating an instance of this class, first call begin() before anything else.\n\
+ * The backlight is on by default, since that is the most likely operating mode in\n\
+ * most cases.\n\
+ */\n\
+class MyLiquidCrystal_I2C : public Print {\n\
+public:\n\
+	/**\n\
+	 * Constructor\n\
+	 *\n\
+	 * @param lcd_addr	I2C slave address of the LCD display. Most likely printed on the\n\
+	 *					LCD circuit board, or look in the supplied LCD documentation.\n\
+	 * @param lcd_cols	Number of columns your LCD display has.\n\
+	 * @param lcd_rows	Number of rows your LCD display has.\n\
+	 * @param charsize	The size in dots that the display has, use LCD_5x10DOTS or LCD_5x8DOTS.\n\
+	 */\n\
+	MyLiquidCrystal_I2C(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS);\n\
+\n\
+	/**\n\
+	 * Set the LCD display in the correct begin state, must be called before anything else is done.\n\
+	 */\n\
+	void begin();\n\
+\n\
+	 /**\n\
+	  * Remove all the characters currently shown. Next print/write operation will start\n\
+	  * from the first position on LCD display.\n\
+	  */\n\
+	void clear();\n\
+\n\
+	/**\n\
+	 * Next print/write operation will will start from the first position on the LCD display.\n\
+	 */\n\
+	void home();\n\
+\n\
+	 /**\n\
+	  * Do not show any characters on the LCD display. Backlight state will remain unchanged.\n\
+	  * Also all characters written on the display will return, when the display in enabled again.\n\
+	  */\n\
+	void noDisplay();\n\
+\n\
+	/**\n\
+	 * Show the characters on the LCD display, this is the normal behaviour. This method should\n\
+	 * only be used after noDisplay() has been used.\n\
+	 */ \n\
+	void display();\n\
+\n\
+	/**\n\
+	 * Do not blink the cursor indicator.\n\
+	 */\n\
+	void noBlink();\n\
+\n\
+	/**\n\
+	 * Start blinking the cursor indicator.\n\
+	 */ \n\
+	void blink();\n\
+\n\
+	/**\n\
+	 * Do not show a cursor indicator.\n\
+	 */\n\
+	void noCursor();\n\
+\n\
+	/**\n\
+ 	 * Show a cursor indicator, cursor can blink on not blink. Use the\n\
+	 * methods blink() and noBlink() for changing cursor blink.\n\
+	 */ \n\
+	void cursor();\n\
+\n\
+	void scrollDisplayLeft();\n\
+	void scrollDisplayRight();\n\
+	void printLeft();\n\
+	void printRight();\n\
+	void leftToRight();\n\
+	void rightToLeft();\n\
+	void shiftIncrement();\n\
+	void shiftDecrement();\n\
+	void noBacklight();\n\
+	void backlight();\n\
+	void autoscroll();\n\
+	void noAutoscroll(); \n\
+	void createChar(uint8_t, uint8_t[]);\n\
+	void setCursor(uint8_t, uint8_t); \n\
+	virtual size_t write(uint8_t);\n\
+	void command(uint8_t);\n\
+\n\
+	inline void blink_on() { blink(); }\n\
+	inline void blink_off() { noBlink(); }\n\
+	inline void cursor_on() { cursor(); }\n\
+	inline void cursor_off() { noCursor(); }\n\
+\n\
+// Compatibility API function aliases\n\
+	void setBacklight(uint8_t new_val);				// alias for backlight() and nobacklight()\n\
+	void load_custom_character(uint8_t char_num, uint8_t *rows);	// alias for createChar()\n\
+	void printstr(const char[]);\n\
+\n\
+private:\n\
+	void send(uint8_t, uint8_t);\n\
+	void write4bits(uint8_t);\n\
+	void expanderWrite(uint8_t);\n\
+	void pulseEnable(uint8_t);\n\
+	uint8_t _addr;\n\
+	uint8_t _displayfunction;\n\
+	uint8_t _displaycontrol;\n\
+	uint8_t _displaymode;\n\
+	uint8_t _cols;\n\
+	uint8_t _rows;\n\
+	uint8_t _charsize;\n\
+	uint8_t _backlightval;\n\
+};\n\
+\n\
+#include <Arduino.h>\n\
+#include <Wire.h>\n\
+\n\
+// When the display powers up, it is configured as follows:\n\
+//\n\
+// 1. Display clear\n\
+// 2. Function set: \n\
+//    DL = 1; 8-bit interface data \n\
+//    N = 0; 1-line display \n\
+//    F = 0; 5x8 dot character font \n\
+// 3. Display on/off control: \n\
+//    D = 0; Display off \n\
+//    C = 0; Cursor off \n\
+//    B = 0; Blinking off \n\
+// 4. Entry mode set: \n\
+//    I/D = 1; Increment by 1\n\
+//    S = 0; No shift \n\
+//\n\
+// Note, however, that resetting the Arduino doesn't reset the LCD, so we\n\
+// can't assume that its in that state when a sketch starts (and the\n\
+// LiquidCrystal constructor is called).\n\
+\n\
+MyLiquidCrystal_I2C::MyLiquidCrystal_I2C(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize)\n\
+{\n\
+	_addr = lcd_addr;\n\
+	_cols = lcd_cols;\n\
+	_rows = lcd_rows;\n\
+	_charsize = charsize;\n\
+	_backlightval = LCD_BACKLIGHT;\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::begin() {\n\
+	Wire.begin();\n\
+	_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;\n\
+\n\
+	if (_rows > 1) {\n\
+		_displayfunction |= LCD_2LINE;\n\
+	}\n\
+\n\
+	// for some 1 line displays you can select a 10 pixel high font\n\
+	if ((_charsize != 0) && (_rows == 1)) {\n\
+		_displayfunction |= LCD_5x10DOTS;\n\
+	}\n\
+\n\
+	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!\n\
+	// according to datasheet, we need at least 40ms after power rises above 2.7V\n\
+	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50\n\
+	delay(50); \n\
+\n\
+	// Now we pull both RS and R/W low to begin commands\n\
+	expanderWrite(_backlightval);	// reset expanderand turn backlight off (Bit 8 =1)\n\
+	delay(1000);\n\
+\n\
+	//put the LCD into 4 bit mode\n\
+	// this is according to the hitachi HD44780 datasheet\n\
+	// figure 24, pg 46\n\
+\n\
+	// we start in 8bit mode, try to set 4 bit mode\n\
+	write4bits(0x03 << 4);\n\
+	delayMicroseconds(4500); // wait min 4.1ms\n\
+\n\
+	// second try\n\
+	write4bits(0x03 << 4);\n\
+	delayMicroseconds(4500); // wait min 4.1ms\n\
+\n\
+	// third go!\n\
+	write4bits(0x03 << 4); \n\
+	delayMicroseconds(150);\n\
+\n\
+	// finally, set to 4-bit interface\n\
+	write4bits(0x02 << 4); \n\
+\n\
+	// set # lines, font size, etc.\n\
+	command(LCD_FUNCTIONSET | _displayfunction);  \n\
+\n\
+	// turn the display on with no cursor or blinking default\n\
+	_displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;\n\
+	display();\n\
+\n\
+// clear it off\n\
+	clear();\n\
+\n\
+	// Initialize to default text direction (for roman languages)\n\
+	_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;\n\
+\n\
+	// set the entry mode\n\
+	command(LCD_ENTRYMODESET | _displaymode);\n\
+\n\
+	home();\n\
+}\n\
+\n\
+/********** high level commands, for the user! */\n\
+void MyLiquidCrystal_I2C::clear(){\n\
+	command(LCD_CLEARDISPLAY);// clear display, set cursor position to zero\n\
+	delayMicroseconds(2000);  // this command takes a long time!\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::home(){\n\
+	command(LCD_RETURNHOME);  // set cursor position to zero\n\
+	delayMicroseconds(2000);  // this command takes a long time!\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::setCursor(uint8_t col, uint8_t row){\n\
+	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };\n\
+	if (row > _rows) {\n\
+		row = _rows-1;    // we count rows starting w/0\n\
+	}\n\
+	command(LCD_SETDDRAMADDR | (col + row_offsets[row]));\n\
+}\n\
+\n\
+// Turn the display on/off (quickly)\n\
+void MyLiquidCrystal_I2C::noDisplay() {\n\
+	_displaycontrol &= ~LCD_DISPLAYON;\n\
+	command(LCD_DISPLAYCONTROL | _displaycontrol);\n\
+}\n\
+void MyLiquidCrystal_I2C::display() {\n\
+	_displaycontrol |= LCD_DISPLAYON;\n\
+	command(LCD_DISPLAYCONTROL | _displaycontrol);\n\
+}\n\
+\n\
+// Turns the underline cursor on/off\n\
+void MyLiquidCrystal_I2C::noCursor() {\n\
+	_displaycontrol &= ~LCD_CURSORON;\n\
+	command(LCD_DISPLAYCONTROL | _displaycontrol);\n\
+}\n\
+void MyLiquidCrystal_I2C::cursor() {\n\
+	_displaycontrol |= LCD_CURSORON;\n\
+	command(LCD_DISPLAYCONTROL | _displaycontrol);\n\
+}\n\
+\n\
+// Turn on and off the blinking cursor\n\
+void MyLiquidCrystal_I2C::noBlink() {\n\
+	_displaycontrol &= ~LCD_BLINKON;\n\
+	command(LCD_DISPLAYCONTROL | _displaycontrol);\n\
+}\n\
+void MyLiquidCrystal_I2C::blink() {\n\
+	_displaycontrol |= LCD_BLINKON;\n\
+	command(LCD_DISPLAYCONTROL | _displaycontrol);\n\
+}\n\
+\n\
+// These commands scroll the display without changing the RAM\n\
+void MyLiquidCrystal_I2C::scrollDisplayLeft(void) {\n\
+	command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);\n\
+}\n\
+void MyLiquidCrystal_I2C::scrollDisplayRight(void) {\n\
+	command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);\n\
+}\n\
+\n\
+// This is for text that flows Left to Right\n\
+void MyLiquidCrystal_I2C::leftToRight(void) {\n\
+	_displaymode |= LCD_ENTRYLEFT;\n\
+	command(LCD_ENTRYMODESET | _displaymode);\n\
+}\n\
+\n\
+// This is for text that flows Right to Left\n\
+void MyLiquidCrystal_I2C::rightToLeft(void) {\n\
+	_displaymode &= ~LCD_ENTRYLEFT;\n\
+	command(LCD_ENTRYMODESET | _displaymode);\n\
+}\n\
+\n\
+// This will 'right justify' text from the cursor\n\
+void MyLiquidCrystal_I2C::autoscroll(void) {\n\
+	_displaymode |= LCD_ENTRYSHIFTINCREMENT;\n\
+	command(LCD_ENTRYMODESET | _displaymode);\n\
+}\n\
+\n\
+// This will 'left justify' text from the cursor\n\
+void MyLiquidCrystal_I2C::noAutoscroll(void) {\n\
+	_displaymode &= ~LCD_ENTRYSHIFTINCREMENT;\n\
+	command(LCD_ENTRYMODESET | _displaymode);\n\
+}\n\
+\n\
+// Allows us to fill the first 8 CGRAM locations\n\
+// with custom characters\n\
+void MyLiquidCrystal_I2C::createChar(uint8_t location, uint8_t charmap[]) {\n\
+	location &= 0x7; // we only have 8 locations 0-7\n\
+	command(LCD_SETCGRAMADDR | (location << 3));\n\
+	for (int i=0; i<8; i++) {\n\
+		write(charmap[i]);\n\
+	}\n\
+}\n\
+\n\
+// Turn the (optional) backlight off/on\n\
+void MyLiquidCrystal_I2C::noBacklight(void) {\n\
+	_backlightval=LCD_NOBACKLIGHT;\n\
+	expanderWrite(0);\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::backlight(void) {\n\
+	_backlightval=LCD_BACKLIGHT;\n\
+	expanderWrite(0);\n\
+}\n\
+\n\
+/*********** mid level commands, for sending data/cmds */\n\
+\n\
+inline void MyLiquidCrystal_I2C::command(uint8_t value) {\n\
+	send(value, 0);\n\
+}\n\
+\n\
+inline size_t MyLiquidCrystal_I2C::write(uint8_t value) {\n\
+	send(value, Rs);\n\
+}\n\
+\n\
+\n\
+/************ low level data pushing commands **********/\n\
+\n\
+// write either command or data\n\
+void MyLiquidCrystal_I2C::send(uint8_t value, uint8_t mode) {\n\
+	uint8_t highnib=value&0xf0;\n\
+	uint8_t lownib=(value<<4)&0xf0;\n\
+	write4bits((highnib)|mode);\n\
+	write4bits((lownib)|mode); \n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::write4bits(uint8_t value) {\n\
+	expanderWrite(value);\n\
+	pulseEnable(value);\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::expanderWrite(uint8_t _data){\n\
+	Wire.beginTransmission(_addr);\n\
+	Wire.write((int)(_data) | _backlightval);\n\
+	Wire.endTransmission();   \n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::pulseEnable(uint8_t _data){\n\
+	expanderWrite(_data | En);	// En high\n\
+	delayMicroseconds(1);		// enable pulse must be >450ns\n\
+	\n\
+	expanderWrite(_data & ~En);	// En low\n\
+	delayMicroseconds(50);		// commands need > 37us to settle\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::load_custom_character(uint8_t char_num, uint8_t *rows){\n\
+	createChar(char_num, rows);\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::setBacklight(uint8_t new_val){\n\
+	if (new_val) {\n\
+		backlight();		// turn backlight on\n\
+	} else {\n\
+		noBacklight();		// turn backlight off\n\
+	}\n\
+}\n\
+\n\
+void MyLiquidCrystal_I2C::printstr(const char c[]){\n\
+	//This function is not identical to the function used for real I2C displays\n\
+	//it's here so the user sketch doesn't have to be changed \n\
+	print(c);\n\
+}\n\
+";
+
+
+
+//---------------------------------------------------
+
 
 var _get_next_pin = function(dropdown_pin) { // TO BE UPDATED
   var pos = -1;
@@ -287,9 +711,9 @@ goog.require('Blockly.Arduino');
 var lib="";
 
 function setOutput(pin, stat) {
-    Blockly.Arduino.definitions_['myLibrary'] = myLibrary;
-    Blockly.Arduino.definitions_['define_gpio_expander3'] = 'pca9555 mcp;';
-    Blockly.Arduino.definitions_['define_gpio_expander4'] = 'byte GPPU = 0x02; //Output Port Registers (0x02..0x03)';
+    Blockly.Arduino.definitions_['library_autoduino_gpio_expander'] = myLibrary_gpio_expander;
+    Blockly.Arduino.definitions_['define_autoduino_gpio_expander3'] = 'pca9555 mcp;';
+    Blockly.Arduino.definitions_['define_autoduino_gpio_expander4'] = 'byte GPPU = 0x02; //Output Port Registers (0x02..0x03)';
 
     Blockly.Arduino.definitions_['setup_autoduino_mcp_a1_begin_init_port_direction'] = "volatile byte directionPort0 = 0x1F; // IN7 and IN8 are inputs\n"+
     "volatile byte directionPort1 = 0x00;\n" +
@@ -321,7 +745,7 @@ function setOutput(pin, stat) {
         case '43':
         case '44':
         case '45':
-            Blockly.Arduino.setups_['define_gpio_instance_0'] = 'mcp.postSetup(0x20); // PCA9555 instance, A2 A1 A0 are set to 000';
+            Blockly.Arduino.setups_['define_autoduino_gpio_instance_0'] = 'mcp.postSetup(0x20); // PCA9555 instance, A2 A1 A0 are set to 000';
             Blockly.Arduino.setups_['setup_autoduino_mcp_begin'] = 'mcp.begin();';
             if (pin < 38) {
                 Blockly.Arduino.setups_['setup_autoduino_mcp_led_1_'+pin] = "directionPort0 = directionPort0 & (~(1<<("+ (pin-30) +")));\n";
@@ -347,15 +771,15 @@ function setOutput(pin, stat) {
 
 
 function getInput(pin) {
-    Blockly.Arduino.definitions_['myLibrary'] = myLibrary;
-    Blockly.Arduino.definitions_['define_gpio_expander3'] = 'pca9555 mcp;';
-    Blockly.Arduino.definitions_['define_gpio_expander4'] = 'byte GPPU = 0x02; //Output Port Registers (0x02..0x03)';
+    Blockly.Arduino.definitions_['library_autoduino_gpio_expander'] = myLibrary_gpio_expander;
+    Blockly.Arduino.definitions_['define_autoduino_gpio_expander3'] = 'pca9555 mcp;';
+    Blockly.Arduino.definitions_['define_autoduino_gpio_expander4'] = 'byte GPPU = 0x02; //Output Port Registers (0x02..0x03)';
 
     Blockly.Arduino.definitions_['setup_autoduino_mcp_a1_begin_init_port_direction'] = "volatile byte directionPort0 = 0x1F; // IN7 and IN8 are inputs\n"+
     "volatile byte directionPort1 = 0x00;\n" +
     "volatile uint16_t pca9555Inputs = 0; // state of the PCA9555 input register\n" +
     "volatile word valuePort = 0x0000;\n";
-    Blockly.Arduino.definitions_['setup_autoduino_mcp_a3_begin_init_port_read'] = "int getMcpInput(int pin) {\n" + 
+    Blockly.Arduino.definitions_['setup_autoduino_mcp_a3_begin_init_port_read'] = "int getAutoduinoInput(int pin) {\n" + 
     "  pca9555Inputs = mcp.readGpioPort();\n" +
     "  int w = (pca9555Inputs>>(pin-30)) & 0x0001;\n" +
     "  return w;\n" +
@@ -383,7 +807,7 @@ function getInput(pin) {
         case '43':
         case '44':
         case '45':
-            Blockly.Arduino.setups_['define_gpio_instance_0'] = 'mcp.postSetup(0x20); // PCA9555 instance, A2 A1 A0 are set to 000';
+            Blockly.Arduino.setups_['define_autoduino_gpio_instance_0'] = 'mcp.postSetup(0x20); // PCA9555 instance, A2 A1 A0 are set to 000';
             Blockly.Arduino.setups_['setup_autoduino_mcp_begin'] = 'mcp.begin();';
             if (pin < 38) {
                 Blockly.Arduino.setups_['setup_autoduino_mcp_push_1_'+pin] = "directionPort0 = directionPort0  | (1<<"+(pin-30)+");";
@@ -393,7 +817,7 @@ function getInput(pin) {
             }
             Blockly.Arduino.setups_['setup_autoduino_mcp_push_2_'+pin] = "mcp.gpioPinMode(directionPort1<<8 | directionPort0);";
 
-            code = "getMcpInput("+pin+")";
+            code = "getAutoduinoInput("+pin+")";
             break;
         default:
             code = "// ERROR in  pin number ["+pin+"]";
@@ -567,6 +991,14 @@ Blockly.Arduino.autoduino_IR_led = function() {
     return code;
 };
 
+
+Blockly.Arduino.autoduino_output = function() {
+    var dropdown_pin = this.getFieldValue('PIN');
+    var dropdown_stat = Blockly.Arduino.valueToCode(this, 'STAT', Blockly.Arduino.ORDER_ATOMIC);
+    var code = "// PROCESSING pin number [" + dropdown_pin + "] as Output = " + dropdown_stat + "\n";
+    code = code + setOutput(dropdown_pin, dropdown_stat);
+    return code;
+};
 
 
 Blockly.Arduino.autoduino_rgb_led = function() {
@@ -745,10 +1177,9 @@ Blockly.Arduino.autoduino_lcdinit = function() {
   var dropdown_cursor = this.getTitleValue('cursor');
   var dropdown_blink = this.getTitleValue('blink');
   var dropdown_backlight = this.getTitleValue('backlight');
-  Blockly.Arduino.definitions_['define_autoduino_Wire'] = '#include <Wire.h>\n';
-  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal_I2C'] = '#include <LiquidCrystal_I2C.h>\n';
-  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'LiquidCrystal_I2C lcd('+dropdown_I2C_adress+','+dropdown_nbcol+','+dropdown_nblig+');\n';
-  var mysetup='lcd.init();\n';
+  Blockly.Arduino.definitions_['library_autoduino_lcd'] = myLibrary_lcd;
+  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'MyLiquidCrystal_I2C lcd('+dropdown_I2C_adress+','+dropdown_nbcol+','+dropdown_nblig+');\n';
+  var mysetup='lcd.begin();\n';
   if (dropdown_backlight=="TRUE")
   {
     mysetup+='lcd.backlight();\n';
@@ -770,6 +1201,22 @@ Blockly.Arduino.autoduino_lcdinit = function() {
   {
     mysetup+='lcd.noBlink();\n';
   }
+  
+  mysetup+='lcd.clear();\n';
+  //  lcd.noBacklight();
+  mysetup+='lcd.home();\n';
+  //-------- Write characters on the display ------------------
+  // NOTE: Cursor Position: Lines and Characters start at 0  
+  mysetup+='lcd.setCursor(3,0); //Start at character 4 on line 0\n';
+  mysetup+='lcd.print("Hello, world!");\n';
+  mysetup+='lcd.setCursor(3,1);\n';
+  mysetup+='lcd.print("AUTODUINO");\n';
+  //mysetup+='lcd.setCursor(0,2);\n';
+  //  lcd.print("20 by 4 Line Display");
+  mysetup+='lcd.setCursor(3,3);\n';
+  mysetup+='lcd.print("(C) NBRemond");\n';
+  mysetup+='lcd.home();\n';
+  
   Blockly.Arduino.setups_['setup_autoduino_lcd'] = mysetup;
   var code="";
   return code;
@@ -777,12 +1224,8 @@ Blockly.Arduino.autoduino_lcdinit = function() {
 
 Blockly.Arduino.autoduino_lcdwrite = function() {
   var text = Blockly.Arduino.valueToCode(this, 'TEXT', Blockly.Arduino.ORDER_UNARY_POSTFIX) || '\'\'';
-  var dropdown_col = this.getFieldValue('COL');
-  var dropdown_lig = this.getFieldValue('LIG');  
-  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <ShiftRegLCD123.h>\n'; 
-  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'ShiftRegLCD123 lcd(12,13,SRLCD123);\n';
-  //dans le setup    
-  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";
+  var dropdown_col = Blockly.Arduino.valueToCode(this, 'COL', Blockly.Arduino.ORDER_ATOMIC);
+  var dropdown_lig = Blockly.Arduino.valueToCode(this, 'LIG', Blockly.Arduino.ORDER_ATOMIC);  
   var code = 'lcd.setCursor('+dropdown_col+','+dropdown_lig+');\n'+
   'lcd.print('+text+');\n';
   return code;
@@ -791,12 +1234,8 @@ Blockly.Arduino.autoduino_lcdwrite = function() {
 
 Blockly.Arduino.autoduino_lcdprint = function() {
   var text = Blockly.Arduino.valueToCode(this, 'TEXT', Blockly.Arduino.ORDER_ATOMIC);
-  var dropdown_col = this.getFieldValue('COL');
-  var dropdown_lig = this.getFieldValue('LIG');  
-  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <ShiftRegLCD123.h>\n'; 
-  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'ShiftRegLCD123 lcd(12,13,SRLCD123);\n';
-  //dans le setup    
-  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";
+  var dropdown_col = Blockly.Arduino.valueToCode(this, 'COL', Blockly.Arduino.ORDER_ATOMIC);
+  var dropdown_lig = Blockly.Arduino.valueToCode(this, 'LIG', Blockly.Arduino.ORDER_ATOMIC);  
   var code = 'lcd.setCursor('+dropdown_col+','+dropdown_lig+');\n'+
   'lcd.print('+text+');\n';
   return code;
@@ -805,19 +1244,11 @@ Blockly.Arduino.autoduino_lcdprint = function() {
 Blockly.Arduino.autoduino_lcdspecial = function() {
   var dropdown_special = this.getTitleValue('special');
   var code="lcd."+dropdown_special+"();\n";
-  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <ShiftRegLCD123.h>\n'; 
-  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'ShiftRegLCD123 lcd(12,13,SRLCD123);\n';
-  //dans le setup    
-  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";    
   return code;
 };
 
 Blockly.Arduino.autoduino_lcdclear = function() {
   var code = 'lcd.clear();\n';
-  Blockly.Arduino.definitions_['define_autoduino_LiquidCrystal'] = '#include <LiquidCrystal.h>\n'; 
-  Blockly.Arduino.definitions_['var_autoduino_lcd'] = 'LiquidCrystal lcd(12,11,5,13,3,2);\n';  
-  //dans le setup    
-  Blockly.Arduino.setups_["setup_autoduino_lcd"] = "lcd.begin(16,2);";    
   return code;
 };
 
@@ -884,7 +1315,7 @@ Blockly.Arduino.autoduino_rc = function() { // TO BE UPDATED
   //generate PIN#+1 port
   var NextPIN = _get_next_pin(dropdown_pin);
 
-  Blockly.Arduino.definitions_['var_lcd'+dropdown_pin] = 'SerialLCD slcd_'+dropdown_pin+'('+dropdown_pin+','+NextPIN+');\n';
+  Blockly.Arduino.definitions_['var_autoduino_lcd'+dropdown_pin] = 'SerialLCD slcd_'+dropdown_pin+'('+dropdown_pin+','+NextPIN+');\n';
   var code = 'slcd_'+dropdown_pin;
   if(dropdown_stat==="LEFT"){
     code += '.scrollDisplayLeft();\n';
@@ -894,5 +1325,35 @@ Blockly.Arduino.autoduino_rc = function() { // TO BE UPDATED
     code += '.autoscroll();\n';
   }
   return code;
+};
+
+/** ****************** UTILE ******************************/
+
+myEdgeFunction = "boolean autoduino_edge(boolean* memory, boolean input) {\n\
+    if (input & !(memory)) {\n\
+        *memory = input;\n\
+        return true;\n\
+    }\n\
+    else {\n\
+        *memory = input;\n\
+        return false;\n\
+    }\n\
+}\n";
+  
+Blockly.Arduino.autoduino_edge_detection = function() { // TO BE UPDATED
+    var dropdown_pin = this.getFieldValue('PIN');
+    var dropdown_stat = this.getFieldValue('STAT');
+
+    Blockly.Arduino.definitions_['var_autoduino_edge'+dropdown_pin] = 'boolean autoduino_edge_detection_'+dropdown_pin+' = false;\n';
+    Blockly.Arduino.definitions_['var_autoduino_edge'] = myEdgeFunction;
+//    Blockly.Arduino.setups_['setup_autoduino_edge_'+dropdown_pin] = 'pinMode('+dropdown_pin+', INPUT);';
+
+    var code = ''
+    if(dropdown_stat==="UP"){
+        code += 'autoduino_edge(&autoduino_edge_detection_'+dropdown_pin+', (boolean)('+getInput(dropdown_pin)+'))';
+    } else {
+        code += 'autoduino_edge(&autoduino_edge_detection_'+dropdown_pin+', ~(boolean)('+getInput(dropdown_pin)+'))';
+    }
+    return [code, Blockly.Arduino.ORDER_ATOMIC];
 };
 
