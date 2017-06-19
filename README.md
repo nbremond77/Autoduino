@@ -2,6 +2,9 @@
 
 Arduino UNO shield to interface the I/O modules of A4 Technology // Autoduino est un bouclier pour Arduino Uno qui permet de piloter les maquettes A4 Technology utilisées pour l'enseignement de la technologie.
 
+
+Vous trouverez sur ce site, les fichiers relatif à la carte électronique, et les développements logiciels associés.
+
 # Introduction
 Le bouclier Autoduino permet de piloter les maquettes A4 technology grâce à un Arduino UNO. Pour cela, le bouclier est équipé de 
 - 16 connecteurs Jack 2.5mm permettant la connection des capteurs et actionneurs de la maquette,
