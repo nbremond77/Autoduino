@@ -1,5 +1,11 @@
 # Autoduino
-Arduino UNO shield to interface the I/O modules of A4 Technology
+
+Arduino UNO shield to interface the I/O modules of A4 Technology // Autoduino est un bouclier pour Arduino Uno qui permet de piloter les maquettes A4 Technology utilisées pour l'enseignement de la technologie.
+
+# Introduction
+Le bouclier Autoduino 
+
+# Note importante
 
 
 Attention: C'est un travail encore non terminé: La carte fonctionne mais le logiciel Blockly@rduino est encore en cours de développement, et il est adapté à cette carte (pas très utile sans le shield car le nom des entrées sorties correspond à la carte et pas à l'arduino).
