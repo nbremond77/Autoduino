@@ -15,9 +15,9 @@ La programmation de l'Arduino peut se faire grâce à blockly@rDuino: http://tec
 # Note importante
 Une nouvelle version de cet Autoduino est en préparation. La carte électronique sera plus simple, et surtout, elle sera adaptée à un Arduino Due qui dispose de beaucoup plus d'entrées/sortie. Cela permettra d'éviter l'utilisation du GPIO Explander (PCA9555), ce qui simplifie grandement le logiciel.
 De plus, l'Arduino Due fonctionne en 3.3V, ce qui simplifie l'utilisation de périphériques récents (Ecran tactile LCD...).
-Enfin, c'est un processeur 32 bits beaucoup plus performant que celui de l'Arduino uNO;
+Enfin, c'est un processeur 32 bits beaucoup plus performant que celui de l'Arduino Uno;
 
 De plus, j'ai prévu quelques amélioration:
-- Ajout de connecteurs Grove en plus des connecteurs jack 2.5?
-- Possibilité de connecter le module Bluetooth sur un RX/TX différent de celui connecté à l'USB
+- Ajout de connecteurs Grove en plus des connecteurs jack 2.5mm,
+- Possibilité de connecter le module Bluetooth sur un RX/TX différent de celui connecté à l'USB,
 - Ajouter une interface permettant de connecter un écran tactile LCD de 2.8 pouces.
